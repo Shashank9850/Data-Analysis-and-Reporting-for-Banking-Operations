@@ -1,0 +1,56 @@
+-- Create the customers table
+CREATE TABLE customers (
+    customer_id INT PRIMARY KEY,
+    customer_name VARCHAR(100),
+    kyc_status VARCHAR(50),
+    kyc_review_date DATE
+);
+
+-- Insert sample data into customers table
+INSERT INTO customers (customer_id, customer_name, kyc_status, kyc_review_date)
+VALUES
+    (1, 'Rahul', 'Approved', '2023-01-15'),
+    (2, 'Riya', 'Pending Review', '2023-02-20'),
+    (3, 'Ram', 'Rejected', '2023-03-10'),
+    (4, 'Ash', 'Approved', '2023-04-05'),
+    (5, 'Bhavika', 'Pending Review', '2023-05-12');
+
+-- Query 1: Extract relevant data for KYC reviews
+SELECT
+    customer_id,
+    customer_name,
+    kyc_status,
+    kyc_review_date
+FROM
+    customers
+WHERE
+    kyc_review_date >= '2023-01-01';  -- Filter data for recent KYC reviews
+
+-- Query 2: Transform and validate data with validation status
+SELECT
+    customer_id,
+    customer_name,
+    kyc_status,
+    kyc_review_date,
+    CASE
+        WHEN kyc_status IN ('Approved', 'Pending Review') THEN 'Valid'
+        ELSE 'Invalid'
+    END AS kyc_validation_status
+FROM
+    customers
+WHERE
+    kyc_review_date >= '2023-01-01';
+
+-- Query 3: Generate summary report of KYC statuses by month
+SELECT
+    DATE_FORMAT(kyc_review_date, '%Y-%m') AS review_month,
+    COUNT(*) AS total_customers,
+    SUM(CASE WHEN kyc_status = 'Approved' THEN 1 ELSE 0 END) AS approved_customers,
+    SUM(CASE WHEN kyc_status = 'Pending Review' THEN 1 ELSE 0 END) AS pending_review_customers,
+    SUM(CASE WHEN kyc_status = 'Rejected' THEN 1 ELSE 0 END) AS rejected_customers
+FROM
+    customers
+WHERE
+    kyc_review_date >= '2023-01-01'
+GROUP BY
+    review_month;
