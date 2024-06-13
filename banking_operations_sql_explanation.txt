@@ -1,0 +1,108 @@
+Project name - Data-Analysis-and-Reporting-for-Banking-Operations
+
+Overview - Develop MySQL queries and procedures to analyze and validate data used in Monitoring reports for banking operations, emphasizing regulatory compliance and operational efficiency.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Explanation:
+
+1. Creating the customers Table
+
+CREATE TABLE customers (
+    customer_id INT PRIMARY KEY,
+    customer_name VARCHAR(100),
+    kyc_status VARCHAR(50),
+    kyc_review_date DATE
+);
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Purpose: Defines a table named customers to store customer data for banking operations.
+Columns:
+customer_id: Unique identifier for each customer (integer).
+customer_name: Name of the customer (up to 100 characters).
+kyc_status: Status of Know Your Customer (KYC) process (up to 50 characters).
+kyc_review_date: Date when KYC review was conducted (date format).
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2. Inserting Sample Data into customers Table
+
+INSERT INTO customers (customer_id, customer_name, kyc_status, kyc_review_date)
+VALUES
+    (1, 'Rahul', 'Approved', '2023-01-15'),
+    (2, 'Riya', 'Pending Review', '2023-02-20'),
+    (3, 'Ram', 'Rejected', '2023-03-10'),
+    (4, 'Ash', 'Approved', '2023-04-05'),
+    (5, 'Bhavika', 'Pending Review', '2023-05-12');
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Purpose: Inserts sample data into the customers table to simulate customer records.
+Values: Each INSERT statement adds a new row with values for customer_id, customer_name, kyc_status, and kyc_review_date.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+3. Query 1: Extract Relevant Data for KYC Reviews
+
+SELECT
+    customer_id,
+    customer_name,
+    kyc_status,
+    kyc_review_date
+FROM
+    customers
+WHERE
+    kyc_review_date >= '2023-01-01';
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Purpose: Retrieves customer data for KYC reviews conducted on or after January 1, 2023.
+Columns Selected: customer_id, customer_name, kyc_status, kyc_review_date.
+Condition (WHERE clause): Filters rows based on kyc_review_date.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+4. Query 2: Transform and Validate Data with Validation Status
+
+SELECT
+    customer_id,
+    customer_name,
+    kyc_status,
+    kyc_review_date,
+    CASE
+        WHEN kyc_status IN ('Approved', 'Pending Review') THEN 'Valid'
+        ELSE 'Invalid'
+    END AS kyc_validation_status
+FROM
+    customers
+WHERE
+    kyc_review_date >= '2023-01-01';
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Purpose: Transforms data by adding a validation status (kyc_validation_status) based on kyc_status.
+Columns Selected: Includes existing columns (customer_id, customer_name, kyc_status, kyc_review_date) and adds kyc_validation_status.
+CASE Statement: Evaluates kyc_status and assigns 'Valid' or 'Invalid' based on conditions.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+5. Query 3: Generate Summary Report of KYC Statuses by Month
+
+SELECT
+    DATE_FORMAT(kyc_review_date, '%Y-%m') AS review_month,
+    COUNT(*) AS total_customers,
+    SUM(CASE WHEN kyc_status = 'Approved' THEN 1 ELSE 0 END) AS approved_customers,
+    SUM(CASE WHEN kyc_status = 'Pending Review' THEN 1 ELSE 0 END) AS pending_review_customers,
+    SUM(CASE WHEN kyc_status = 'Rejected' THEN 1 ELSE 0 END) AS rejected_customers
+FROM
+    customers
+WHERE
+    kyc_review_date >= '2023-01-01'
+GROUP BY
+    review_month;
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Purpose: Generates a summary report of KYC statuses (Approved, Pending Review, Rejected) grouped by month (review_month).
+Columns Selected:
+DATE_FORMAT(kyc_review_date, '%Y-%m') AS review_month: Formats kyc_review_date as year and month (YYYY-MM).
+COUNT(*) AS total_customers: Counts total customers reviewed each month.
+SUM(CASE ... END) AS approved_customers, SUM(CASE ... END) AS pending_review_customers, SUM(CASE ... END) AS rejected_customers: Summarizes counts of customers with specific kyc_status values.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+Conclusion:
+
+This SQL script demonstrates creating a table (customers), inserting sample data, and performing various queries to extract, transform, validate, and report on KYC statuses within a banking operations context. Each query serves a distinct purpose, showcasing typical SQL operations used for data analysis and reporting in financial institutions.
+
